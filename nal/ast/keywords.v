@@ -1,0 +1,43 @@
+module ast
+
+pub enum Keywords {
+	@i8,
+	@i16,
+	i32,
+	@i64,
+	@u8,
+	@u16,
+	@u32,
+	@u64,
+	@byte,
+	short,
+	@int,
+	long,
+	ubyte,
+	ushort,
+	uint,
+	ulong,
+	@string,
+	@bool,
+	nal,	// null
+	void,
+	@true,
+	@false,
+	var,	// automatically 
+	@if,
+	@else,
+	@for,
+	while,
+	@struct,
+	@interface,
+	@enum,
+	this,
+	public,
+	private,
+	static,
+	final,
+	use,
+	define,
+	new,
+	destroy
+}
