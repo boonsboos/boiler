@@ -3,7 +3,10 @@ module compiler
 import os
 
 import nal.ast
- 
+
+__global char_counter = 0
+__global line_counter = 0
+
 pub fn parse(file_name string) {
 	if !os.is_file(file_name) {
 		eprintln('file not found.')
@@ -12,37 +15,49 @@ pub fn parse(file_name string) {
 
 	file_contents := os.read_lines(file_name) or { panic('could not open file! $err') }
 
-	mut words := []string{}
-	mut line_counter := 0
+	mut words := []NalToken{}
 	for line in file_contents {
 		line_counter++
+		char_counter = 0
 		mut sentence := line.trim_space()
-		mut char_counter := 0
-		for char in sentence {
-			char_counter++
-			match char {
-				0x2c { // comma
-					words << sentence.all_before(',')
-					sentence = sentence.substr(sentence.index(',') or { panic('could not find index') }+1, sentence.len)
-				}
-				0x20 { // space
-					words << sentence.all_before(' ')
-					sentence = sentence.substr(sentence.index(' ') or { panic('could not find index') }+1, sentence.len)
-				}
-				0x5b {
-					if sentence.index('[') or {0} +1 == 0x5d {
-						println('array definition found')
-					} else {
-						throw_compiler_error('found opening square bracket but no closing square bracket...', .error, line_counter, char_counter, file_name)
-					}
-					words << sentence.all_before(' ')
-					sentence = sentence.substr(sentence.index(']') or { panic('could not find index') }+1, sentence.len)
-				}
-
-				else { continue }
-			}
+		
+		match true{
+			sentence.starts_with('@') { println('found a comment :D') } //skip comment 
+			sentence.contains_any('({') { words << match_function_definition(sentence) }
+			
+			else { println('could not find anything to parse on $sentence') }
 		}
 	}
+
 	println(words)
 
+}
+
+fn match_function_definition(sentence string) NalToken {
+	for char in sentence {
+		char_counter++	
+
+		match char {
+			
+			// if we find a `(`, we get everything before, and until the first `)`. 
+			// then, we find the index of the first `()`, and get everything in-between, splitting on `,`
+			
+			0x28 { 
+
+				name := sentence.split(' ')
+				println(name)
+
+				return NalToken{
+					loc: Location {
+						line_counter,
+						char_counter
+					}
+				} 
+
+			}
+
+			else { continue }
+		}
+	}
+	panic('failed to tokenise function definition!')
 }
