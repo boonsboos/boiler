@@ -1,4 +1,7 @@
-public static void main(string[] args) {
-    @ very cool comment here
-    print("hello world\n");
+define main
+
+use IO.print
+
+void main() {
+    print("hello world\n") @ very cool comment here
 }
