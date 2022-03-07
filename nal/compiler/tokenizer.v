@@ -10,11 +10,6 @@ pub:
 	token_type TokenType
 }
 
-struct Tokenizer {
-mut:
-	tokens []Token
-}
-
 pub fn start_compile(i string) {
 
 	mut file := os.read_file(i) or { 
@@ -23,13 +18,13 @@ pub fn start_compile(i string) {
 	}
 	file = file.replace("\r\n", "\n") // replace windows linefeeds
 	
-	tokenize(file, i)
-
+	tokens := tokenize(file, i)
+	parse(tokens)
 }
 
-fn tokenize(file string, path string) {
+fn tokenize(file string, path string) []Token {
 
-	mut tokenizer := Tokenizer{}
+	mut tokens := []Token{}
 
 	len := file.len
 	mut idx := 0
@@ -62,9 +57,11 @@ fn tokenize(file string, path string) {
 
 		col += token.text.len
 		idx += token.text.len
-		println(token)
-		tokenizer.tokens << token
+
+		tokens << token
 		
 	}
+
+	return tokens
 
 }
