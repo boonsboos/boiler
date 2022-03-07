@@ -32,6 +32,21 @@ fn match_token(file string, path string, line int, col int, current string) ?Tok
 		current.starts_with("}") {
 			return Token{"}", line, col, .nal_close_curly}
 		}
+		current.starts_with('+') {
+			return Token{'+', line, col, .nal_plus}
+		}
+		current.starts_with('-') {
+			return Token{'-', line, col, .nal_minus}
+		}
+		current.starts_with('*') {
+			return Token{'*', line, col, .nal_mult}
+		}
+		current.starts_with('/') {
+			return Token{'/', line, col, .nal_div}
+		}
+		current.starts_with('%') {
+			return Token{'%', line, col, .nal_mod}
+		}
 		current.starts_with("(") {
 			return Token{"(", line, col, .nal_open_paren}
 		}
@@ -65,7 +80,6 @@ fn match_token(file string, path string, line int, col int, current string) ?Tok
 		current.starts_with("=") {
 			return Token{"=", line, col, .nal_equals}
 		}
-		// TODO: LOGIC, BINARY AND MATH OPERATORS
 		else {
 			token := regex_token(file, path, line, col, current) or { return Token{current, line, col, .nal_eof} }
 			return token
@@ -87,7 +101,7 @@ fn regex_token(file string, path string, line int, col int, current string) ?Tok
 	}
 	
 	if [current[0]] in ['0'.bytes(), '1'.bytes(), '2'.bytes(), '3'.bytes(), '4'.bytes(), '5'.bytes(), '6'.bytes(), '7'.bytes(), '8'.bytes(), '9'.bytes()] {
-		println('number!')
+		return Token{current[0].ascii_str(), line, col, .nal_number_lit}
 	}
 
 	re.compile_opt("^[a-zA-Z_]+$") or { panic(err) }

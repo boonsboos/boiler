@@ -38,12 +38,25 @@ pub enum TokenType {
 	nal_close_curly
 	nal_dot
 	nal_comma
+	nal_colon
 	whitespace
 	comment // starts with @, skips the entire line
 
 	nal_equals // =
-	// TODO
-	// BINARY OPS
+	// TODO BINARY OPS
 	// MATH OPS
+	nal_plus // +
+	nal_minus// -
+	nal_mult // *
+	nal_div  // /
+	nal_mod  // %
 	// BOOLEAN OPS
+	nal_bool_and // &&
+	nal_bool_or  // ||
+	nal_bool_not // !
+	nal_cmpeq // ==
+	nal_gt // >
+	nal_gteq // >=
+	nal_lt // <
+	nal_lteq // <=
 }
