@@ -1,0 +1,12 @@
+define main
+
+use IO.print
+
+struct StructName {
+	type string
+}
+
+void main() {
+	new = StructName{}
+	print(new.type)
+}

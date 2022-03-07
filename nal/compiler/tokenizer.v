@@ -34,38 +34,35 @@ fn tokenize(file string, path string) {
 	len := file.len
 	mut idx := 0
 	mut line := 0
-	mut col := 0
+	mut col := 1 // columns are 1-indexed
 
 	for idx < len {
 
 		current := file.substr(idx, file.len)
 
 		if current.starts_with("\n") {
-			col = 0
+			col = 1
 			line++
 			idx++
 			continue
 		}
 
 		token := match_token(file, path, line, col, current) or { continue }
-		println(token)
 		if token.token_type == .whitespace {
 			col++
 			idx++
-			tokenizer.tokens << token
 			continue
 		}
 		if token.token_type == .comment {
 			line++
-			col = 0
+			col = 1
 			idx += token.text.len
-			tokenizer.tokens << token
 			continue
 		}
 
 		col += token.text.len
 		idx += token.text.len
-		
+		println(token)
 		tokenizer.tokens << token
 		
 	}

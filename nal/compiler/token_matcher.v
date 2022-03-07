@@ -18,10 +18,13 @@ fn match_token(file string, path string, line int, col int, current string) ?Tok
 			return Token{" ", line, col, .whitespace}
 		}
 		current.starts_with("@") {
-			return Token{'@'+current.find_between("@", "\n"), line, col, .comment} // we ignore comments
+			return Token{'@'+current.find_between("@", "\n"), line, col, .comment}
 		}
 		current.starts_with(".") {
 			return Token{".", line, col, .nal_dot}
+		}
+		current.starts_with(",") {
+			return Token{",", line, col, .nal_comma}
 		}
 		current.starts_with("{") {
 			return Token{"{", line, col, .nal_open_curly}
@@ -35,9 +38,6 @@ fn match_token(file string, path string, line int, col int, current string) ?Tok
 		current.starts_with(")") {
 			return Token{")", line, col, .nal_close_paren}
 		}
-		current.starts_with("void") {
-			return Token{"void", line, col, .nal_void}
-		}
 		current.starts_with("define") {
 			return Token{"define", line, col, .nal_define}
 		}
@@ -47,9 +47,26 @@ fn match_token(file string, path string, line int, col int, current string) ?Tok
 		current.starts_with("pub") {
 			return Token{"pub", line, col, .nal_public}
 		}
-		
+		current.starts_with("struct") {
+			return Token{"struct", line, col, .nal_struct}
+		}
+		current.starts_with("interface") {
+			return Token{"interface", line, col, .nal_interface}
+		}
+		current.starts_with("enum") {
+			return Token{"enum", line, col, .nal_enum}
+		}
+		current.starts_with("true") {
+			return Token{"true", line, col, .nal_true}
+		}
+		current.starts_with("false") {
+			return Token{"false", line, col, .nal_false}
+		}
+		current.starts_with("=") {
+			return Token{"=", line, col, .nal_equals}
+		}
+		// TODO: LOGIC, BINARY AND MATH OPERATORS
 		else {
-			// TODO: do regex stuff here
 			token := regex_token(file, path, line, col, current) or { return Token{current, line, col, .nal_eof} }
 			return token
 		}
