@@ -2,6 +2,8 @@ module compiler
 
 import regex
 
+import error
+
 fn match_token(file string, path string, line int, col int, current string) ?Token {
 
 	match true {
@@ -32,6 +34,9 @@ fn match_token(file string, path string, line int, col int, current string) ?Tok
 		current.starts_with("}") {
 			return Token{"}", line, col, .nal_close_curly}
 		}
+		current.starts_with("=") {
+			return Token{"=", line, col, .nal_equals}
+		}
 		current.starts_with('+') {
 			return Token{'+', line, col, .nal_plus}
 		}
@@ -52,6 +57,18 @@ fn match_token(file string, path string, line int, col int, current string) ?Tok
 		}
 		current.starts_with(")") {
 			return Token{")", line, col, .nal_close_paren}
+		}
+		current.starts_with(">") {
+			return Token{">", line, col, .nal_gt}
+		}
+		current.starts_with(">=") {
+			return Token{">=", line, col, .nal_gteq}
+		}
+		current.starts_with("<") {
+			return Token{"<", line, col, .nal_lt}
+		}
+		current.starts_with("<=") {
+			return Token{"<=", line, col, .nal_lteq}
 		}
 		current.starts_with("define") {
 			return Token{"define", line, col, .nal_define}
@@ -77,9 +94,6 @@ fn match_token(file string, path string, line int, col int, current string) ?Tok
 		current.starts_with("false") {
 			return Token{"false", line, col, .nal_false}
 		}
-		current.starts_with("=") {
-			return Token{"=", line, col, .nal_equals}
-		}
 		else {
 			token := regex_token(file, path, line, col, current) or { return Token{current, line, col, .nal_eof} }
 			return token
@@ -95,7 +109,7 @@ fn regex_token(file string, path string, line int, col int, current string) ?Tok
 		re.compile_opt('^"{1}.+"{1}$') or { panic(err) }
 		matches := re.find_all_str(current)
 		if matches.len < 1 {
-			panic('$file:$line:$col [ERROR] | failed to tokenise string')
+			error.compiler_crit_error(path, line, col, 'unclosed string!')
 		}
 		return Token{matches[0], line, col, .nal_string_lit}
 	}
@@ -107,7 +121,7 @@ fn regex_token(file string, path string, line int, col int, current string) ?Tok
 	re.compile_opt("^[a-zA-Z_]+$") or { panic(err) }
 	matches := re.find_all_str(current)
 	if matches.len < 1 {
-		panic('$file:$line:$col [ERROR] | failed to tokenise ident')
+		panic('$path:$line:$col [ERROR] | failed to tokenise ident ${current[0].ascii_str()}')
 	}
 	return Token{matches[0], line, col, .nal_identifier}
 }

@@ -18,8 +18,8 @@ pub fn start_compile(i string) {
 	}
 	file = file.replace("\r\n", "\n") // replace windows linefeeds
 	
-	tokens := tokenize(file, i)
-	parse(tokens)
+	mut tokens := tokenize(file, i)
+	parse(mut tokens)
 }
 
 fn tokenize(file string, path string) []Token {
