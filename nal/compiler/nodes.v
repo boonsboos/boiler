@@ -1,6 +1,7 @@
 module compiler
 
 pub struct Variable {
+pub:
 	name string
 	typ  string
 }
@@ -9,9 +10,10 @@ pub interface AstNode {	}
 
 pub struct FileNode {
 pub mut:
-	define DefineNode
-	uses   []UseNode
-	enums  []EnumNode
+	define    DefineNode
+	uses      []UseNode
+	structs   []StructNode
+	enums     []EnumNode
 	functions []FunctionNode
 }
 
@@ -24,6 +26,12 @@ pub struct UseNode {
 pub mut:
 	mod      string
 	imported string
+}
+
+pub struct StructNode {
+pub mut:
+	name    string
+	members []Variable
 }
 
 pub struct EnumNode {

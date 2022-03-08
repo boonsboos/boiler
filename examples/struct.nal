@@ -3,10 +3,10 @@ define main
 use IO.print
 
 struct StructName {
-	type string
+	string typ
 }
 
 fun main() {
 	new = StructName{}
-	print(new.type)
+	print(new.typ)
 }

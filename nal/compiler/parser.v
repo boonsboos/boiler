@@ -59,7 +59,7 @@ fn parse(mut tokens []Token, path string) {
 				node.functions << parse_functions(mut p)
 			}
 			.nal_struct {
-
+				node.structs << parse_structs(mut p)
 			}
 			.nal_interface {
 
@@ -125,8 +125,11 @@ fn parse_functions(mut parser Parser) FunctionNode {
 		}
 		parser.take_type(.nal_close_paren)
 		
+		// return type
 		if parser.peek_one().token_type == .nal_identifier {
 			node.ret_type = parser.take_type(.nal_identifier).text
+		} else {
+			error.compiler_crit_error(parser.path, parser.peek_one().line, parser.peek_one().col, 'functions have to have a return type. if not returning anything, add `void` before the curly brace')
 		}
 		parser.take_type(.nal_open_curly)
 		
@@ -162,6 +165,30 @@ fn parse_enums(mut parser Parser) EnumNode {
 			} 
 			node.values << value
 		}
+	}
+	return node
+}
+
+fn parse_structs(mut parser Parser) StructNode {
+
+	mut node := StructNode{}
+
+	if parser.peek_one().token_type == .nal_struct {
+		
+		parser.take_type(.nal_struct)
+		node.name = parser.take_type(.nal_identifier).text
+
+		parser.take_type(.nal_open_curly)
+
+		for parser.peek_one().token_type != .nal_close_curly {
+			node.members << Variable{
+				parser.take_type(.nal_identifier).text // type
+				parser.take_type(.nal_identifier).text // name
+			}
+		}
+
+		parser.take_type(.nal_close_curly)
+
 	}
 	return node
 }
