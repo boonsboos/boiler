@@ -129,7 +129,8 @@ fn parse_functions(mut parser Parser) FunctionNode {
 		if parser.peek_one().token_type == .nal_identifier {
 			node.ret_type = parser.take_type(.nal_identifier).text
 		} else {
-			error.compiler_crit_error(parser.path, parser.peek_one().line, parser.peek_one().col, 'functions have to have a return type. if not returning anything, add `void` before the curly brace')
+			error.compiler_crit_error(parser.path, parser.peek_one().line, parser.peek_one().col,
+			'functions have to have a return type. if not returning anything, add `void` before the curly brace')
 		}
 		parser.take_type(.nal_open_curly)
 		
@@ -191,4 +192,12 @@ fn parse_structs(mut parser Parser) StructNode {
 
 	}
 	return node
+}
+
+fn parse_interfaces(mut parser Parser) {
+	if parser.peek_one().token_type == .nal_interface {
+		parser.take_type(.nal_interface)
+
+		
+	}
 }
