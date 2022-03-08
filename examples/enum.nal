@@ -1,0 +1,6 @@
+define main
+
+enum Boolean {
+    TRUE
+    FALSE
+}

@@ -1,8 +1,9 @@
 module compiler
 
+import regex
+
 import error
 
-// TODO: proper ast nodes
 struct Parser {
 	path   string
 mut:
@@ -11,8 +12,9 @@ mut:
 }
 
 fn (mut p Parser) take() Token {
+ 	tok := p.tokens[p.idx]
 	p.idx++
-	return p.tokens[p.idx-1]
+	return tok
 }
 
 fn (mut p Parser) take_type(t TokenType) Token {
@@ -35,6 +37,11 @@ fn (mut p Parser) peek(i int) Token {
 	return p.tokens[p.idx+i]
 }
 
+fn (mut p Parser) eof() bool {
+	return p.idx >= p.tokens.len
+}
+
+// MAIN PARSE FUNCTION
 fn parse(mut tokens []Token, path string) {
 	mut p := Parser{path, tokens, 0}
 
@@ -46,6 +53,24 @@ fn parse(mut tokens []Token, path string) {
 	// interface
 	// enum
 	// function 
+	for !p.eof() {
+		match p.peek_one().token_type {
+			.nal_function {
+				node.functions << parse_functions(mut p)
+			}
+			.nal_struct {
+
+			}
+			.nal_interface {
+
+			}
+			.nal_enum {
+				node.enums << parse_enums(mut p)
+			}
+			else { break }
+		}
+		
+	}
 	// separate lists of private or public
 	println(node)
 }
@@ -74,22 +99,69 @@ fn parse_uses(mut parser Parser) []UseNode {
 	return uses
 }
 
-fn parse_functions(mut p Parser) {
+fn parse_functions(mut parser Parser) FunctionNode {
+
+	mut node := FunctionNode{}
+
 	if parser.peek_one().token_type == .nal_function {
 		parser.take_type(.nal_function)
 
-		if parser.peek_one() == .nal_open_paren {
-			// TODO: definition on
+		if parser.peek_one().token_type == .nal_open_paren {
+			parser.take_type(.nal_open_paren)
+			node.def_type = parser.take_type(.nal_identifier).text // type
+			parser.take_type(.nal_identifier) // variable
+			parser.take_type(.nal_close_paren)
 		}
-		ident := parser.take_type(.nal_identifier)
+		node.name = parser.take_type(.nal_identifier).text
 		parser.take_type(.nal_open_paren)
-		// TODO: params
+		if parser.peek_one().token_type == .nal_identifier {
+			for parser.peek(2).token_type == .nal_comma {
+				node.params << Variable {
+					parser.take_type(.nal_identifier).text // type
+					parser.take_type(.nal_identifier).text // variable
+				}
+				parser.take_type(.nal_comma)
+			}
+		}
 		parser.take_type(.nal_close_paren)
 		
-		if parser.peek_one().type == .nal_identifier {
-			// TODO: return type
+		if parser.peek_one().token_type == .nal_identifier {
+			node.ret_type = parser.take_type(.nal_identifier).text
 		}
 		parser.take_type(.nal_open_curly)
-		// TODO: statements
+		
+		for parser.peek_one().token_type != .nal_close_curly {
+			// TODO: statements
+			parser.take()
+		}
+
 	}
+	return node
+}
+
+fn parse_enums(mut parser Parser) EnumNode {
+	mut node := EnumNode{}
+
+	if parser.peek_one().token_type == .nal_enum {
+
+		mut re := regex.new()
+		re.compile_opt('^[A-Z]$') or { panic('bad regex pattern') }
+
+		parser.take_type(.nal_enum)
+
+		node.name = parser.take_type(.nal_identifier).text
+
+		parser.take_type(.nal_open_curly)
+
+		for parser.peek_one().token_type != .nal_close_curly {
+			tok := parser.take_type(.nal_identifier) // extra variable for erroring purposes
+			value := tok.text
+			// returns false if matches?
+			if re.matches_string(value) {
+				error.compiler_error(parser.path, tok.line, tok.col, 'enum value `$value` must be uppercase!')
+			} 
+			node.values << value
+		}
+	}
+	return node
 }

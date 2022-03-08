@@ -2,6 +2,7 @@ define main
 
 use IO.print
 
-fun main() {
+fun main() void {
+    @ a cool comment here
     print("hello world\n") @ very cool comment here
 }
