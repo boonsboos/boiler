@@ -1,6 +1,6 @@
 define main
 
-void main() {
+fun main() {
 	int ident = 2 + 2
 	bool iden = 2 > 2
 }

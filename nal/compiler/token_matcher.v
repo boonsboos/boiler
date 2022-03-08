@@ -70,6 +70,9 @@ fn match_token(file string, path string, line int, col int, current string) ?Tok
 		current.starts_with("<=") {
 			return Token{"<=", line, col, .nal_lteq}
 		}
+		current.starts_with("fun") {
+			return Token{"fun", line, col, .nal_function}
+		}
 		current.starts_with("define") {
 			return Token{"define", line, col, .nal_define}
 		}
@@ -109,7 +112,7 @@ fn regex_token(file string, path string, line int, col int, current string) ?Tok
 		re.compile_opt('^"{1}.+"{1}$') or { panic(err) }
 		matches := re.find_all_str(current)
 		if matches.len < 1 {
-			error.compiler_crit_error(path, line, col, 'unclosed string!')
+			error.compiler_error(path, line, col, 'unclosed string!')
 		}
 		return Token{matches[0], line, col, .nal_string_lit}
 	}
@@ -121,7 +124,7 @@ fn regex_token(file string, path string, line int, col int, current string) ?Tok
 	re.compile_opt("^[a-zA-Z_]+$") or { panic(err) }
 	matches := re.find_all_str(current)
 	if matches.len < 1 {
-		panic('$path:$line:$col [ERROR] | failed to tokenise ident ${current[0].ascii_str()}')
+		error.compiler_error(path, line, col, 'failed to tokenise ident ${current[0].ascii_str()}')
 	}
 	return Token{matches[0], line, col, .nal_identifier}
 }

@@ -2,6 +2,6 @@ define main
 
 use IO.print
 
-void main() {
+fun main() {
     print("hello world\n") @ very cool comment here
 }

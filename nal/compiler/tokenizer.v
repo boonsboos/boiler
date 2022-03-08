@@ -19,7 +19,7 @@ pub fn start_compile(i string) {
 	file = file.replace("\r\n", "\n") // replace windows linefeeds
 	
 	mut tokens := tokenize(file, i)
-	parse(mut tokens)
+	parse(mut tokens, i)
 }
 
 fn tokenize(file string, path string) []Token {

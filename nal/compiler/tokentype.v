@@ -16,6 +16,7 @@ pub enum TokenType {
 	nal_for
 	nal_while
 	// data structures
+	nal_function
 	nal_struct
 	nal_interface
 	nal_enum

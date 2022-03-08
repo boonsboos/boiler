@@ -6,7 +6,7 @@ struct StructName {
 	type string
 }
 
-void main() {
+fun main() {
 	new = StructName{}
 	print(new.type)
 }
