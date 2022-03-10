@@ -1,0 +1,9 @@
+define main
+
+interface InterfaceName {
+    name string
+    function(string, bool)
+}
+
+struct StructName { 
+}

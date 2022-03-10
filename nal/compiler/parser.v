@@ -60,7 +60,7 @@ fn parse(mut tokens []Token, path string) {
 				node.structs << parse_structs(mut p)
 			}
 			.nal_interface {
-				// wait for now
+				node.interfaces << parse_interfaces(mut p)
 			}
 			.nal_enum {
 				node.enums << parse_enums(mut p)
@@ -128,7 +128,7 @@ fn parse_functions(mut parser Parser) FunctionNode {
 				parser.take_type(.nal_identifier).text // type
 				parser.take_type(.nal_identifier).text // variable
 			}
-			
+
 			for parser.peek(2).token_type == .nal_comma {
 				parser.take_type(.nal_comma)
 				node.params << Variable {
@@ -200,6 +200,10 @@ fn parse_structs(mut parser Parser) StructNode {
 		}
 
 		node.name = parser.take_type(.nal_identifier).text
+
+		// TODO: make room for dedicated interface implementation
+		// use this syntax!!
+		// struct StructName : InterfaceName { }
 		parser.take_type(.nal_open_curly)
 
 		if parser.peek_one().token_type == .nal_close_curly {
@@ -220,12 +224,30 @@ fn parse_structs(mut parser Parser) StructNode {
 	return node
 }
 
-fn parse_interfaces(mut parser Parser) {
+fn parse_interfaces(mut parser Parser) InterfaceNode {
+
+	mut node := InterfaceNode{}
+
 	if parser.peek_one().token_type == .nal_interface {
 		parser.take_type(.nal_interface)
 
-		
+		if parser.peek_one().token_type == .nal_open_curly {
+			error.compiler_error(parser.path, parser.tokens[parser.idx+1].line, parser.tokens[parser.idx+1].col,
+			'interface needs a name')
+		}
+
+		node.name = parser.take_type(.nal_identifier).text
+
+		parser.take_type(.nal_open_curly)
+
+		for parser.peek_one().token_type != .nal_close_curly {
+			parser.take()
+		}
+
+		parser.take_type(.nal_close_curly)
 	}
+
+	return node
 }
 
 // it's easier to return an array here

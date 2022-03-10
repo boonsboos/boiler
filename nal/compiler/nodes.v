@@ -1,7 +1,7 @@
 module compiler
 
 pub struct Variable {
-pub:
+pub mut:
 	typ  string
 	name string
 }
@@ -10,11 +10,12 @@ pub interface AstNode {	}
 
 pub struct FileNode {
 pub mut:
-	define    DefineNode
-	uses      []UseNode
-	structs   []StructNode
-	enums     []EnumNode
-	functions []FunctionNode
+	define     DefineNode
+	uses       []UseNode
+	interfaces []InterfaceNode
+	structs    []StructNode
+	enums      []EnumNode
+	functions  []FunctionNode
 }
 
 pub struct DefineNode {
@@ -47,4 +48,11 @@ pub mut:
 	def_type  string // which struct the function is defined on
 	params    []Variable
 	statement []Statement
+}
+
+pub struct InterfaceNode {
+pub mut:
+	name      string
+	members   []Variable
+	functions []Statement
 }
