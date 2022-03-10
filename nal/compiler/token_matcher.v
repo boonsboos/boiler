@@ -117,7 +117,7 @@ fn regex_token(file string, path string, line int, col int, current string) ?Tok
 		return Token{matches[0], line, col, .nal_string_lit}
 	}
 	
-	if [current[0]] in ['0'.bytes(), '1'.bytes(), '2'.bytes(), '3'.bytes(), '4'.bytes(), '5'.bytes(), '6'.bytes(), '7'.bytes(), '8'.bytes(), '9'.bytes()] {
+	if current[0] in [byte(`0`), `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`] {
 		return Token{current[0].ascii_str(), line, col, .nal_number_lit}
 	}
 

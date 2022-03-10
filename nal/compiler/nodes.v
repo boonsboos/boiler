@@ -2,8 +2,8 @@ module compiler
 
 pub struct Variable {
 pub:
-	name string
 	typ  string
+	name string
 }
 
 pub interface AstNode {	}
@@ -42,9 +42,9 @@ pub mut:
 
 pub struct FunctionNode {
 pub mut:
-	name     string
-	ret_type string
-	def_type string // which struct the function is defined on
-	params   []Variable
-	// TODO: []statements
+	name      string
+	ret_type  string
+	def_type  string // which struct the function is defined on
+	params    []Variable
+	statement []Statement
 }

@@ -2,6 +2,16 @@ module error
 
 import term
 
+__global (
+	parse_error int
+	token_error int
+)
+
+fn init() {
+	parse_error = 0
+	token_error = 0
+}
+
 const (
 	info = term.bright_cyan('[INF]') + reset
 	warn = term.bright_yellow('[WRN]') + reset
@@ -10,6 +20,7 @@ const (
 ) 
 
 pub fn compiler_error(filename string, line int, column int, message string) {
+	parse_error++
 	println('$filename:$line:$column |$error| $message')
 }
 

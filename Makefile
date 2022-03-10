@@ -1,4 +1,4 @@
-FLAGS := -skip-unused
+FLAGS := -skip-unused -enable-globals
 
 test-win:
 	v $(FLAGS) -o nalc.exe .

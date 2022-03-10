@@ -7,6 +7,6 @@ struct StructName {
 }
 
 fun main() void {
-	new = StructName{}
-	print(new.typ)
+	StructName new = StructName{}
+	@print(new.typ)
 }

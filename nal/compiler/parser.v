@@ -49,10 +49,8 @@ fn parse(mut tokens []Token, path string) {
 
 	node.define = parse_define(mut p)
 	node.uses = parse_uses(mut p)
-	// struct
-	// interface
-	// enum
-	// function 
+
+	// parse data structures and functions 
 	for !p.eof() {
 		match p.peek_one().token_type {
 			.nal_function {
@@ -62,7 +60,7 @@ fn parse(mut tokens []Token, path string) {
 				node.structs << parse_structs(mut p)
 			}
 			.nal_interface {
-
+				// wait for now
 			}
 			.nal_enum {
 				node.enums << parse_enums(mut p)
@@ -72,7 +70,15 @@ fn parse(mut tokens []Token, path string) {
 		
 	}
 	// separate lists of private or public
+
+	// this variable is defined in ../error/error.v
+	if parse_error > 0 {
+		exit(1)
+	}
+
 	println(node)
+
+	// return AST to codegen
 }
 
 fn parse_define(mut parser Parser) DefineNode {
@@ -135,8 +141,8 @@ fn parse_functions(mut parser Parser) FunctionNode {
 		parser.take_type(.nal_open_curly)
 		
 		for parser.peek_one().token_type != .nal_close_curly {
-			// TODO: statements
-			parser.take()
+			node.statement << parse_statements(mut parser)
+			//parser.take()
 		}
 
 	}
@@ -177,14 +183,24 @@ fn parse_structs(mut parser Parser) StructNode {
 	if parser.peek_one().token_type == .nal_struct {
 		
 		parser.take_type(.nal_struct)
-		node.name = parser.take_type(.nal_identifier).text
 
+		if parser.peek_one().token_type == .nal_open_curly {
+			error.compiler_error(parser.path, parser.tokens[parser.idx+1].line, parser.tokens[parser.idx+1].col,
+			'struct needs a name')
+		}
+
+		node.name = parser.take_type(.nal_identifier).text
 		parser.take_type(.nal_open_curly)
+
+		if parser.peek_one().token_type == .nal_close_curly {
+			error.compiler_error(parser.path, parser.tokens[parser.idx+1].line, parser.tokens[parser.idx+1].col,
+			'struct cannot be empty!')
+		}
 
 		for parser.peek_one().token_type != .nal_close_curly {
 			node.members << Variable{
-				parser.take_type(.nal_identifier).text // type
 				parser.take_type(.nal_identifier).text // name
+				parser.take_type(.nal_identifier).text // type
 			}
 		}
 
@@ -200,4 +216,48 @@ fn parse_interfaces(mut parser Parser) {
 
 		
 	}
+}
+
+// it's easier to return an array here
+fn parse_statements(mut parser Parser) []Statement {
+
+	mut statements := []Statement{}
+
+	if parser.peek_one().token_type == .nal_identifier && parser.peek(1).token_type == .nal_open_paren {
+		// function call
+		println(parser.peek_one())
+		println('function call')
+	}
+
+	if parser.peek(2).token_type == .nal_equals {
+		// declaration
+		var := Variable {
+			parser.take_type(.nal_identifier).text // type
+			parser.take_type(.nal_identifier).text // name
+		}
+
+		parser.take_type(.nal_equals)
+
+		mut struct_init := StructInitStatement{}
+		struct_init.name = parser.take_type(.nal_identifier).text
+
+		parser.take_type(.nal_open_curly)
+
+		for parser.peek_one().token_type != .nal_close_curly {
+			struct_init.members << Variable {
+				parser.take_type(.nal_identifier).text // type
+				parser.take_type(.nal_identifier).text // name
+			}
+			if parser.peek_one().token_type == .nal_comma {
+				parser.take_type(.nal_comma)
+			}
+		}
+
+		parser.take_type(.nal_close_curly)
+
+		statements << DeclarationStatement { var, struct_init }
+	}
+
+	return statements
+
 }
