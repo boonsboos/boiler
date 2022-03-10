@@ -118,7 +118,12 @@ fn regex_token(file string, path string, line int, col int, current string) ?Tok
 	}
 	
 	if current[0] in [byte(`0`), `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`] {
-		return Token{current[0].ascii_str(), line, col, .nal_number_lit}
+		re.compile_opt('^[0-9]+[0-9]*') or { panic('bad regex in number parsing') }
+		matches := re.find_all_str(current)
+		if matches.len < 1 {
+			error.compiler_error(path, line, col, 'not a number literal')
+		}
+		return Token{matches[0], line, col, .nal_number_lit}
 	}
 
 	re.compile_opt("^[a-zA-Z_]+$") or { panic(err) }
