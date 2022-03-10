@@ -28,8 +28,9 @@ fn tokenize(file string, path string) []Token {
 
 	len := file.len
 	mut idx := 0
-	mut line := 0
+	mut line := 1 // lines are 1-indexed
 	mut col := 1 // columns are 1-indexed
+	// reason for that is vs code
 
 	for idx < len {
 

@@ -1,0 +1,11 @@
+define main
+
+use IO.print
+
+fun main() void {
+    newPrint("new print!")
+}
+
+fun newPrint(string text) void {
+    print(text)
+}

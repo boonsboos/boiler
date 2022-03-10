@@ -115,18 +115,27 @@ fn parse_functions(mut parser Parser) FunctionNode {
 		if parser.peek_one().token_type == .nal_open_paren {
 			parser.take_type(.nal_open_paren)
 			node.def_type = parser.take_type(.nal_identifier).text // type
-			parser.take_type(.nal_identifier) // variable
 			parser.take_type(.nal_close_paren)
 		}
-		node.name = parser.take_type(.nal_identifier).text
+
+		node.name = parser.take_type(.nal_identifier).text // function name
+
 		parser.take_type(.nal_open_paren)
+
 		if parser.peek_one().token_type == .nal_identifier {
+
+			node.params << Variable {
+				parser.take_type(.nal_identifier).text // type
+				parser.take_type(.nal_identifier).text // variable
+			}
+			
 			for parser.peek(2).token_type == .nal_comma {
+				parser.take_type(.nal_comma)
 				node.params << Variable {
 					parser.take_type(.nal_identifier).text // type
 					parser.take_type(.nal_identifier).text // variable
 				}
-				parser.take_type(.nal_comma)
+				
 			}
 		}
 		parser.take_type(.nal_close_paren)
@@ -142,8 +151,9 @@ fn parse_functions(mut parser Parser) FunctionNode {
 		
 		for parser.peek_one().token_type != .nal_close_curly {
 			node.statement << parse_statements(mut parser)
-			//parser.take()
 		}
+
+		parser.take_type(.nal_close_curly)
 
 	}
 	return node
@@ -155,7 +165,7 @@ fn parse_enums(mut parser Parser) EnumNode {
 	if parser.peek_one().token_type == .nal_enum {
 
 		mut re := regex.new()
-		re.compile_opt('^[A-Z]$') or { panic('bad regex pattern') }
+		re.compile_opt('^[A-Z_]$') or { panic('bad regex pattern in parse_enums') }
 
 		parser.take_type(.nal_enum)
 
@@ -232,10 +242,13 @@ fn parse_statements(mut parser Parser) []Statement {
 		parser.take_type(.nal_open_paren)
 
 		for parser.peek_one().token_type != .nal_close_paren {
-			call.params << parser.take_type(.nal_identifier).text
+			call.params << parser.take().text
+			// here we can be sure that it's an identifier
 			if parser.peek_one().token_type == .nal_dot {
-				parser.take()
-				call.params << call.params.pop() + '.' + parser.take_type(.nal_identifier).text
+				// array jank
+				call.params << call.params.pop() + 
+				parser.take_type(.nal_dot).text + 
+				parser.take_type(.nal_identifier).text
 			}
 		}	
 
