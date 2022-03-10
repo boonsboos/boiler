@@ -1,6 +1,6 @@
 module compiler
 
-type Statement = DeclarationStatement | FunctionCallStatement
+type Statement = DeclarationStatement | FunctionCallStatement | MathStatement
 
 // Type VariableName = FunctionCallStatement
 // Type VariableName = StructInitStatement
@@ -11,7 +11,7 @@ pub mut:
 	val Value
 }
 
-type Value = FunctionCallStatement | StructInitStatement
+type Value = FunctionCallStatement | StructInitStatement | int
 
 // function() | no params
 // function(param, param) | params
@@ -27,4 +27,12 @@ pub struct StructInitStatement {
 pub mut:
 	name string
 	members []string
+}
+
+pub struct MathStatement {
+pub mut:
+	var Variable
+	a Value
+	op TokenType
+	b Value
 }

@@ -279,7 +279,7 @@ fn parse_statements(mut parser Parser) []Statement {
 		statements << call	
 	}
 
-	if parser.peek(2).token_type == .nal_equals {
+	if parser.peek(2).token_type == .nal_equals && parser.peek(4).token_type == .nal_open_curly {
 		// declaration
 		var := Variable {
 			parser.take_type(.nal_identifier).text // type
