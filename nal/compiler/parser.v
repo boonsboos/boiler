@@ -255,55 +255,26 @@ fn parse_statements(mut parser Parser) []Statement {
 
 	mut statements := []Statement{}
 
-	if parser.peek_one().token_type == .nal_identifier && parser.peek(1).token_type == .nal_open_paren {
-		// function call
-		mut call := FunctionCallStatement{}
-
-		call.name = parser.take_type(.nal_identifier).text
-
-		parser.take_type(.nal_open_paren)
-
-		for parser.peek_one().token_type != .nal_close_paren {
-			call.params << parser.take().text
-			// here we can be sure that it's an identifier
-			if parser.peek_one().token_type == .nal_dot {
-				// array jank
-				call.params << call.params.pop() + 
-				parser.take_type(.nal_dot).text + 
-				parser.take_type(.nal_identifier).text
-			}
-		}	
-
-		parser.take_type(.nal_close_paren)
-
-		statements << call	
+	// functionName()
+	if parser.peek_one().token_type == .nal_identifier && 
+	parser.peek(1).token_type == .nal_open_paren {
+		statements << parse_function_call(mut parser)	
 	}
 
-	if parser.peek(2).token_type == .nal_equals && parser.peek(4).token_type == .nal_open_curly {
-		// declaration
-		var := Variable {
-			parser.take_type(.nal_identifier).text // type
-			parser.take_type(.nal_identifier).text // name
-		}
-
-		parser.take_type(.nal_equals)
-
-		mut struct_init := StructInitStatement{}
-		struct_init.name = parser.take_type(.nal_identifier).text
-
-		parser.take_type(.nal_open_curly)
-
-		for parser.peek_one().token_type != .nal_close_curly {
-			struct_init.members << parser.take_type(.nal_identifier).text // member
-			if parser.peek_one().token_type == .nal_comma {
-				parser.take_type(.nal_comma)
-			}
-		}
-
-		parser.take_type(.nal_close_curly)
-
-		statements << DeclarationStatement { var, struct_init }
+	// Type Var = Struct{}
+	if parser.peek(2).token_type == .nal_equals && 
+	parser.peek(4).token_type == .nal_open_curly {
+		statements << parse_struct_init(mut parser)
 	}
+
+	// Type Var = functionName()
+
+	// what if i introduce reverse polish notation?
+	// Type Var = a b +
+	// Type Var = functionName() b +
+	// Type Var = a functionName() +
+	// Type Var = foo() bar() +
+	// Type Var = a b >
 
 	return statements
 
