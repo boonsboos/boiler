@@ -8,5 +8,5 @@ struct StructName {
 
 fun main() void {
 	StructName new = StructName{}
-	@print(new.typ)
+	print(new.typ)
 }

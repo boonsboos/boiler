@@ -225,8 +225,23 @@ fn parse_statements(mut parser Parser) []Statement {
 
 	if parser.peek_one().token_type == .nal_identifier && parser.peek(1).token_type == .nal_open_paren {
 		// function call
-		println(parser.peek_one())
-		println('function call')
+		mut call := FunctionCallStatement{}
+
+		call.name = parser.take_type(.nal_identifier).text
+
+		parser.take_type(.nal_open_paren)
+
+		for parser.peek_one().token_type != .nal_close_paren {
+			call.params << parser.take_type(.nal_identifier).text
+			if parser.peek_one().token_type == .nal_dot {
+				parser.take()
+				call.params << call.params.pop() + '.' + parser.take_type(.nal_identifier).text
+			}
+		}	
+
+		parser.take_type(.nal_close_paren)
+
+		statements << call	
 	}
 
 	if parser.peek(2).token_type == .nal_equals {
@@ -244,10 +259,7 @@ fn parse_statements(mut parser Parser) []Statement {
 		parser.take_type(.nal_open_curly)
 
 		for parser.peek_one().token_type != .nal_close_curly {
-			struct_init.members << Variable {
-				parser.take_type(.nal_identifier).text // type
-				parser.take_type(.nal_identifier).text // name
-			}
+			struct_init.members << parser.take_type(.nal_identifier).text // member
 			if parser.peek_one().token_type == .nal_comma {
 				parser.take_type(.nal_comma)
 			}

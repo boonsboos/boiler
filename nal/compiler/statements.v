@@ -18,7 +18,7 @@ type Value = FunctionCallStatement | StructInitStatement
 pub struct FunctionCallStatement {
 pub mut:
 	name string
-	params []Variable
+	params []string
 }
 
 // StructName{} | default init
@@ -26,5 +26,5 @@ pub mut:
 pub struct StructInitStatement {
 pub mut:
 	name string
-	members []Variable
+	members []string
 }
