@@ -1,6 +1,6 @@
 module compiler
 
-type Statement = DeclarationStatement | FunctionCallStatement | MathStatement
+type Statement = DeclarationStatement | FunctionCallStatement | MathStatement | StructInitStatement
 
 // Type VariableName = FunctionCallStatement
 // Type VariableName = StructInitStatement
@@ -52,7 +52,7 @@ pub mut:
 	members []string
 }
 
-fn parse_struct_init(mut parser Parser) StructInitStatement {
+fn parse_struct_init(mut parser Parser) DeclarationStatement {
 	var := Variable {
 		parser.take_type(.nal_identifier).text // type
 		parser.take_type(.nal_identifier).text // name

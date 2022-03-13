@@ -269,13 +269,6 @@ fn parse_statements(mut parser Parser) []Statement {
 
 	// Type Var = functionName()
 
-	// what if i introduce reverse polish notation?
-	// Type Var = a b +
-	// Type Var = functionName() b +
-	// Type Var = a functionName() +
-	// Type Var = foo() bar() +
-	// Type Var = a b >
-
 	return statements
 
 }

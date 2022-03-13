@@ -1,6 +1,12 @@
 define main
 
+use IO.print
+
 enum Boolean {
     TRUE
     FALSE
+}
+
+fun main() void {
+    print(Boolean.TRUE)
 }
