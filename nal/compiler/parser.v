@@ -73,6 +73,7 @@ fn parse(mut tokens []Token, path string) {
 
 	// this variable is defined in ../error/error.v
 	if parse_error > 0 {
+		error.compiler_message('exiting due to errors', .fatal)
 		exit(1)
 	}
 
