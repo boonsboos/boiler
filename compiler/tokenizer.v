@@ -1,25 +1,11 @@
 module compiler
 
-import os
-
 pub struct Token {
 pub:
 	text	   string
 	line	   int
 	col 	   int
-	token_type TokenType
-}
-
-pub fn start_compile(i string) {
-
-	mut file := os.read_file(i) or { 
-		eprintln('failed to find file')
-		exit(1)
-	}
-	file = file.replace("\r\n", "\n") // replace windows linefeeds
-	
-	mut tokens := tokenize(file, i)
-	parse(mut tokens, i)
+	typ TokenType
 }
 
 fn tokenize(file string, path string) []Token {
@@ -44,12 +30,12 @@ fn tokenize(file string, path string) []Token {
 		}
 
 		token := match_token(file, path, line, col, current) or { continue }
-		if token.token_type == .whitespace {
+		if token.typ == .whitespace {
 			col++
 			idx++
 			continue
 		}
-		if token.token_type == .comment {
+		if token.typ == .comment {
 			line++
 			col = 1
 			idx += token.text.len

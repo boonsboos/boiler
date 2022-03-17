@@ -2,16 +2,18 @@ module main
 
 import os
 
-import nal
+import util
 
 fn main() {
 
 	if os.args.len > 1 {
 		match os.args[1] {
 			'com' {
-				nal.compile_parse_flags(os.args[2..os.args.len])
+				util.compile_parse_flags(os.args[2..os.args.len])
 			}
-			else{ nal.print_usage() }
+			else{ util.print_usage() }
 		}
-	} else { nal.print_usage() }
+	} else { 
+		util.print_usage()
+	}
 }

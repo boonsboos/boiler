@@ -40,7 +40,7 @@ pub fn compiler_info(filename string, line int, column int, message string) {
 	println('$filename:$line:$column |$info| $message')
 }
 
-pub fn compiler_crit_error(filename string, line int, column int, message string) {
+pub fn compiler_fatal(filename string, line int, column int, message string) {
 	println('$filename:$line:$column |$critical| $message')
 	exit(1)
 }
