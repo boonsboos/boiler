@@ -16,4 +16,7 @@ pub fn start_compile(i string) {
 		exit(1)
 	}
 	println(tokens)
+	nodes := parse(i, mut tokens)
+	println(nodes)
+
 }

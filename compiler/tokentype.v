@@ -2,7 +2,8 @@ module compiler
 
 pub enum TokenType {
 	// numbers
-	nal_number_lit
+	nal_int_lit
+	nal_float_lit
 	nal_string_lit
 	nal_nal	// null
 	// boolean values
@@ -29,7 +30,7 @@ pub enum TokenType {
 	// nal_new
 	// nal_destroy
 	// anything that's a type, module function or variable name
-	nal_identifier
+	identifier
 	// eof
 	nal_eof
 	// characters important for blocks
@@ -61,3 +62,5 @@ pub enum TokenType {
 	nal_lt // <
 	nal_lteq // <=
 }
+
+pub const operators = [.nal_plus, .nal_minus, .nal_mult, .nal_div, .nal_mod]

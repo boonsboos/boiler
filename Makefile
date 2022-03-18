@@ -1,15 +1,18 @@
 FLAGS := -skip-unused -enable-globals
-OUTPUT := -o nalc
+OUTPUT := nalc
 
 test-win:
-	v $(FLAGS) $(OUTPUT).exe .
+	v $(FLAGS) -o $(OUTPUT).exe .
+	./$(OUTPUT).exe com ./examples/test.nal
 
 # we use msvc on windows
 build-win:
-	v -cc msvc $(FLAGS) $(OUTPUT).exe .
+	v -cc msvc $(FLAGS) -o $(OUTPUT).exe .
 
 test-nix:
-	v $(FLAGS) $(OUTPUT) .
+	v $(FLAGS) -o $(OUTPUT) .
+	./$(OUTPUT) com ./examples/test.nal
 
+# we use gcc on *nix
 build-nix:
-	v -cc gcc $(FLAGS) $(OUTPUT) .
+	v -cc gcc $(FLAGS) -o $(OUTPUT) .

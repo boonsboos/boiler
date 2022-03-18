@@ -118,18 +118,30 @@ fn regex_token(file string, path string, line int, col int, current string) ?Tok
 	}
 	
 	if current[0] in [byte(`0`), `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`] {
-		re.compile_opt('^[0-9]+[0-9]*') or { panic('bad regex in number parsing') }
+		// parse int
+		re.compile_opt('^[0-9]+([.]{0})') or { panic('bad regex in int parsing') }
 		matches := re.find_all_str(current)
 		if matches.len < 1 {
-			error.compiler_error(path, line, col, 'not a number literal')
+			// else see if it's a floating number
+			re.compile_opt('^[0-9]+([.]{1}[0-9]+)') or { panic('bad regex in float parsing') }
+			matched := re.find_all_str(current)
+			if matched.len < 1 {
+				error.compiler_error(path, line, col, 'not a float literal')
+				exit(1)
+			} else {
+				return Token{matched[0], line, col, .nal_float_lit}
+			}
+			error.compiler_error(path, line, col, 'not an int literal')
+			exit(1)
 		}
-		return Token{matches[0], line, col, .nal_number_lit}
+		return Token{matches[0], line, col, .nal_int_lit}
 	}
-
-	re.compile_opt("^[a-zA-Z_]+$") or { panic(err) }
-	matches := re.find_all_str(current)
-	if matches.len < 1 {
+	
+	// allowed naming includes snake_case, PascalCase, camelCase and kebab-case
+	re.compile_opt('^[\-a-zA-Z_]+$') or { panic('bad regex in ident parsing') }
+	matched := re.find_all_str(current)
+	if matched.len < 1 {
 		error.compiler_error(path, line, col, 'failed to tokenise ident ${current[0].ascii_str()}')
 	}
-	return Token{matches[0], line, col, .nal_identifier}
+	return Token{matched[0], line, col, .identifier}
 }

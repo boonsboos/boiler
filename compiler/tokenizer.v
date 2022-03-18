@@ -49,6 +49,7 @@ fn tokenize(file string, path string) []Token {
 		
 	}
 
+	tokens << Token{'', 0, 0, .nal_eof}
 	return tokens
 
 }

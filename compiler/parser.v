@@ -40,7 +40,7 @@ fn (mut p Parser) peek(i int) Token {
 // checks if the offset will overflow the len
 // returns `false` if all's good
 fn (mut p Parser) eof_offset(i int) bool {
-	return p.idx + i >= p.tokens.len
+	return p.idx + i > p.tokens.len
 }
 
 // same as `eof_offset`, but defaults to 0.
@@ -49,7 +49,7 @@ fn (mut p Parser) eof() bool {
 	return p.eof_offset(0)
 }
 
-pub fn parse(path string, mut tokens []Token) {
+pub fn parse(path string, mut tokens []Token) []Node {
 
 	mut nodes := []Node{}
 
@@ -59,9 +59,68 @@ pub fn parse(path string, mut tokens []Token) {
 		0
 	}
 
-	parse_variable(mut parser)
+	for parser.peek_next().typ != .nal_eof {
+		nodes << parse_variable(mut parser)
+	}
+
+	return nodes
 }
 
-pub fn parse_variable(mut parser Parser) {
+pub fn parse_variable(mut parser Parser) Node {
 
+	mut node := VariableNode{} 
+
+	if parser.peek_next().typ == .identifier {
+		node.typ = parser.take(.identifier).text
+		node.ident = parser.take(.identifier).text
+
+		parser.take(.nal_equals)
+
+		if parser.peek_next().typ == .nal_string_lit {
+			node.value = StringNode { parser.take(.nal_string_lit).text }
+		}
+
+		if parser.peek(1).typ in operators {
+			node.value = parse_binary_statement(mut parser)
+		}	
+	}
+
+	return node
+}
+
+pub fn parse_binary_statement(mut parser Parser) BinaryStatement {
+	mut statement := BinaryStatement{}
+
+	if parser.peek_next().typ == .nal_int_lit {
+		statement.l = IntegerNode{ parser.take(.nal_int_lit).text.int() }
+		statement.op = parser.grab().typ
+		statement.r = IntegerNode{ parser.take(.nal_int_lit).text.int() }
+	}
+
+	if parser.peek_next().typ == .nal_float_lit {
+		statement.l = FloatNode{ parser.take(.nal_float_lit).text.f64() }
+		statement.op = parser.grab().typ
+		statement.r = FloatNode{ parser.take(.nal_float_lit).text.f64() }
+	}
+
+	if parser.peek_next().typ in operators {
+		return recurse_binary_statement(mut parser, mut statement)
+	}
+
+	return statement
+}
+
+fn recurse_binary_statement(mut parser Parser, mut statement BinaryStatement) BinaryStatement {
+	mut stmt := BinaryStatement{}
+
+	stmt.l = statement
+
+	if statement.l is IntegerNode {
+		stmt.op = parser.grab().typ
+		stmt.r = IntegerNode { parser.take(.nal_int_lit).text.int() }
+	} else if statement.l is FloatNode {
+		panic('adding multiple floats together is not implemented yet')
+	}
+
+	return stmt
 }
