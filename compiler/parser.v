@@ -2,6 +2,7 @@ module compiler
 
 import error
 
+[heap]
 pub struct Parser {
 	path string
 pub mut:
@@ -103,7 +104,7 @@ pub fn parse_binary_statement(mut parser Parser) BinaryStatement {
 		statement.r = FloatNode{ parser.take(.nal_float_lit).text.f64() }
 	}
 
-	if parser.peek_next().typ in operators {
+	if parser.peek_next().typ in operators && parser.peek(1).typ == .nal_int_lit {
 		return recurse_binary_statement(mut parser, mut statement)
 	}
 
@@ -115,11 +116,23 @@ fn recurse_binary_statement(mut parser Parser, mut statement BinaryStatement) Bi
 
 	stmt.l = statement
 
-	if statement.l is IntegerNode {
-		stmt.op = parser.grab().typ
-		stmt.r = IntegerNode { parser.take(.nal_int_lit).text.int() }
-	} else if statement.l is FloatNode {
+	stmt.op = parser.grab().typ
+
+	if parser.peek_next().typ == .nal_int_lit {
+		tok := parser.take(.nal_int_lit)
+		// check against dividing by 0
+		if tok.text.int() == 0 && stmt.op == .nal_div {
+			error.compiler_error(parser.path, tok.line, tok.col, 'dividing by 0 is not possible')
+		} else {
+			stmt.r = IntegerNode { tok.text.int() }
+		}
+	} else if parser.peek_next().typ == .nal_float_lit {
 		panic('adding multiple floats together is not implemented yet')
+	} 
+	
+	if parser.peek_next().typ in operators {
+		println('we recursinn')
+		return recurse_binary_statement(mut parser, mut stmt)
 	}
 
 	return stmt

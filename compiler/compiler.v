@@ -15,7 +15,7 @@ pub fn start_compile(i string) {
 		println('more than 1 error detected, aborting early...')
 		exit(1)
 	}
-	println(tokens)
+	//println(tokens)
 	nodes := parse(i, mut tokens)
 	println(nodes)
 
