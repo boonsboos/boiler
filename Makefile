@@ -7,7 +7,7 @@ test-win:
 
 # we use msvc on windows
 build-win:
-	v -cc msvc $(FLAGS) -o $(OUTPUT).exe .
+	v -cc msvc -prod $(FLAGS) -o $(OUTPUT).exe .
 
 test-nix:
 	v $(FLAGS) -o $(OUTPUT) .
@@ -15,4 +15,4 @@ test-nix:
 
 # we use gcc on *nix
 build-nix:
-	v -cc gcc $(FLAGS) -o $(OUTPUT) .
+	v -cc gcc -prod $(FLAGS) -o $(OUTPUT) .
