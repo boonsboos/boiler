@@ -63,4 +63,12 @@ pub enum TokenType {
 	nal_lteq // <=
 }
 
-pub const operators = [.nal_plus, .nal_minus, .nal_mult, .nal_div, .nal_mod]
+pub const (
+	operators = [
+	.nal_plus, .nal_minus, .nal_mult, .nal_div, .nal_mod,
+	.nal_bool_and, .nal_bool_not, .nal_bool_or, .nal_cmpeq,
+	.nal_gt, .nal_gteq, .nal_lt, .nal_lteq
+	]
+	// slight bug
+	literals = [TokenType.identifier, .nal_string_lit, .nal_int_lit, .nal_float_lit]
+)

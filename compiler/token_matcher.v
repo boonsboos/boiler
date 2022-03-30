@@ -138,7 +138,7 @@ fn regex_token(file string, path string, line int, col int, current string) ?Tok
 	}
 	
 	// allowed naming includes snake_case, PascalCase, camelCase and kebab-case
-	re.compile_opt('^[\-a-zA-Z_]+$') or { panic('bad regex in ident parsing') }
+	re.compile_opt('^[a-zA-Z_][\-a-zA-Z_0-9]+$') or { panic('bad regex in ident parsing') }
 	matched := re.find_all_str(current)
 	if matched.len < 1 {
 		error.compiler_error(path, line, col, 'failed to tokenise ident ${current[0].ascii_str()}')

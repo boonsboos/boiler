@@ -17,12 +17,11 @@ fn (mut p Parser) grab() Token {
 
 fn (mut p Parser) take(typ TokenType) Token {
 	t := p.grab()
+	println(t.typ)
 	if t.typ == typ {
 		return t
 	}
 	error.compiler_fatal(p.path, t.line, t.col, 'expected `$typ` but got `$t.typ` instead!')
-	parse_error++
-	exit(1)
 }
 
 fn (mut p Parser) peek_next() Token {
@@ -77,63 +76,54 @@ pub fn parse_variable(mut parser Parser) Node {
 
 		parser.take(.nal_equals)
 
-		if parser.peek_next().typ == .nal_string_lit {
-			node.value = StringNode { parser.take(.nal_string_lit).text }
+		// if parser.peek_next().typ == .nal_string_lit {
+		// 	node.value = StringNode { parser.take(.nal_string_lit).text }
+		// }
+
+		if parser.peek_next().typ == .nal_int_lit {
+			node.value = Literal(IntegerNode{ parser.take(.nal_int_lit).text.int() })
 		}
 
-		if parser.peek(1).typ in operators {
-			node.value = parse_binary_statement(mut parser)
-		}	
+		if parser.peek_next().typ in operators {
+			pass := node.value
+			mut new := Binary{}
+			new.l = pass
+			new.op = parser.grab()
+			new.r = get_literal(mut parser)
+			node.value = new
+		}
+
 	}
 
 	return node
 }
 
-pub fn parse_binary_statement(mut parser Parser) BinaryStatement {
-	mut statement := BinaryStatement{}
+fn get_literal(mut parser Parser) Literal {
 
-	if parser.peek_next().typ == .nal_int_lit {
-		statement.l = IntegerNode{ parser.take(.nal_int_lit).text.int() }
-		statement.op = parser.grab().typ
-		statement.r = IntegerNode{ parser.take(.nal_int_lit).text.int() }
-	}
+	tok := parser.take()
 
-	if parser.peek_next().typ == .nal_float_lit {
-		statement.l = FloatNode{ parser.take(.nal_float_lit).text.f64() }
-		statement.op = parser.grab().typ
-		statement.r = FloatNode{ parser.take(.nal_float_lit).text.f64() }
-	}
-
-	if parser.peek_next().typ in operators && parser.peek(1).typ == .nal_int_lit {
-		return recurse_binary_statement(mut parser, mut statement)
-	}
-
-	return statement
-}
-
-fn recurse_binary_statement(mut parser Parser, mut statement BinaryStatement) BinaryStatement {
-	mut stmt := BinaryStatement{}
-
-	stmt.l = statement
-
-	stmt.op = parser.grab().typ
-
-	if parser.peek_next().typ == .nal_int_lit {
-		tok := parser.take(.nal_int_lit)
-		// check against dividing by 0
-		if tok.text.int() == 0 && stmt.op == .nal_div {
-			error.compiler_error(parser.path, tok.line, tok.col, 'dividing by 0 is not possible')
-		} else {
-			stmt.r = IntegerNode { tok.text.int() }
+	match tok.typ {
+		.nal_int_lit {
+			return Literal(IntegerNode{ tok.text.int() })
 		}
-	} else if parser.peek_next().typ == .nal_float_lit {
-		panic('adding multiple floats together is not implemented yet')
-	} 
-	
-	if parser.peek_next().typ in operators {
-		println('we recursinn')
-		return recurse_binary_statement(mut parser, mut stmt)
+		.nal_float_lit {
+			return Literal(FloatNode { tok.text.f64() })
+		}
+		.nal_string_lit {
+			return Literal(StringNode { tok.text })
+		}
+		.nal_false {
+			return Literal(BoolNode { false })
+		}
+		.nal_true {
+			return Literal(BoolNode { true })
+		}
+		else {
+			error.compiler_fatal(
+				parser.path, tok.line, tok.col,
+				"not a literal!")
+		}
 	}
 
-	return stmt
+	return 
 }
