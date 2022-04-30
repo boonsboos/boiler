@@ -5,7 +5,7 @@ pub type Node = VariableNode
 pub type Expr = Binary | Literal
 
 // NON-terminal
-pub type Literal = IntegerNode | FloatNode | StringNode | BoolNode
+pub type Literal = BoolNode | FloatNode | IntegerNode | StringNode
 
 pub struct FileNode {
 pub mut:
@@ -41,7 +41,7 @@ pub mut:
 
 pub struct Binary {
 pub mut:
-	l Expr
-	r Expr
+	l  Expr
+	r  Expr
 	op Token
 }

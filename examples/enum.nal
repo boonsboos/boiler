@@ -1,12 +1,14 @@
-define main
+def main
 
 use IO.print
 
-enum Boolean {
-    TRUE
+type Boolean = [
+    TRUE,
     FALSE
-}
+]
 
 fun main() void {
-    print(Boolean.TRUE)
+    for i in Boolean {
+        print(i)
+    }
 }

@@ -7,12 +7,12 @@ pub struct Parser {
 	path string
 pub mut:
 	tokens []Token
-	idx int
+	idx    int
 }
 
 fn (mut p Parser) grab() Token {
 	p.idx++
-	return p.tokens[p.idx-1]
+	return p.tokens[p.idx - 1]
 }
 
 fn (mut p Parser) take(typ TokenType) Token {
@@ -21,7 +21,7 @@ fn (mut p Parser) take(typ TokenType) Token {
 	if t.typ == typ {
 		return t
 	}
-	error.compiler_fatal(p.path, t.line, t.col, 'expected `$typ` but got `$t.typ` instead!')
+	error.compiler_fatal(p.path, t.line, t.col, 'expected `$typ` but got `$t.text` instead!')
 }
 
 fn (mut p Parser) peek_next() Token {
@@ -33,10 +33,10 @@ fn (mut p Parser) peek(i int) Token {
 	if p.idx + i > p.tokens.len || i == 0 {
 		return p.peek_next()
 	}
-	return p.tokens[p.idx+i]
+	return p.tokens[p.idx + i]
 }
 
-// check for eof. 
+// check for eof.
 // checks if the offset will overflow the len
 // returns `false` if all's good
 fn (mut p Parser) eof_offset(i int) bool {
@@ -50,14 +50,9 @@ fn (mut p Parser) eof() bool {
 }
 
 pub fn parse(path string, mut tokens []Token) []Node {
-
 	mut nodes := []Node{}
 
-	mut parser := Parser{
-		path,
-		tokens,
-		0
-	}
+	mut parser := Parser{path, tokens, 0}
 
 	for parser.peek_next().typ != .nal_eof {
 		nodes << parse_variable(mut parser)
@@ -67,8 +62,7 @@ pub fn parse(path string, mut tokens []Token) []Node {
 }
 
 pub fn parse_variable(mut parser Parser) Node {
-
-	mut node := VariableNode{} 
+	mut node := VariableNode{}
 
 	if parser.peek_next().typ == .identifier {
 		node.typ = parser.take(.identifier).text
@@ -81,7 +75,7 @@ pub fn parse_variable(mut parser Parser) Node {
 		// }
 
 		if parser.peek_next().typ == .nal_int_lit {
-			node.value = Literal(IntegerNode{ parser.take(.nal_int_lit).text.int() })
+			node.value = Literal(IntegerNode{parser.take(.nal_int_lit).text.int()})
 		}
 
 		if parser.peek_next().typ in operators {
@@ -89,41 +83,37 @@ pub fn parse_variable(mut parser Parser) Node {
 			mut new := Binary{}
 			new.l = pass
 			new.op = parser.grab()
-			new.r = get_literal(mut parser)
+			new.r = get_literal(mut parser) or { Literal(StringNode{''}) }
 			node.value = new
 		}
-
 	}
 
 	return node
 }
 
-fn get_literal(mut parser Parser) Literal {
-
-	tok := parser.take()
+fn get_literal(mut parser Parser) ?Literal {
+	tok := parser.grab()
 
 	match tok.typ {
 		.nal_int_lit {
-			return Literal(IntegerNode{ tok.text.int() })
+			return Literal(IntegerNode{tok.text.int()})
 		}
 		.nal_float_lit {
-			return Literal(FloatNode { tok.text.f64() })
+			return Literal(FloatNode{tok.text.f64()})
 		}
 		.nal_string_lit {
-			return Literal(StringNode { tok.text })
+			return Literal(StringNode{tok.text})
 		}
 		.nal_false {
-			return Literal(BoolNode { false })
+			return Literal(BoolNode{false})
 		}
 		.nal_true {
-			return Literal(BoolNode { true })
+			return Literal(BoolNode{true})
 		}
 		else {
-			error.compiler_fatal(
-				parser.path, tok.line, tok.col,
-				"not a literal!")
+			error.compiler_fatal(parser.path, tok.line, tok.col, 'not a literal!')
 		}
 	}
 
-	return 
+	return none
 }

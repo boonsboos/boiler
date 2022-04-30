@@ -5,11 +5,11 @@ pub enum TokenType {
 	nal_int_lit
 	nal_float_lit
 	nal_string_lit
-	nal_nal	// null
+	nal_nal // null
 	// boolean values
 	nal_true
 	nal_false
-	//var	// automatically converts type might add this later
+	nal_var // for module or global constants (can be mut)
 	// logic
 	nal_if
 	nal_else
@@ -17,15 +17,13 @@ pub enum TokenType {
 	nal_for
 	nal_while
 	// data structures
-	nal_function
-	nal_struct
-	nal_interface
-	nal_enum
+	nal_fun
+	nal_type
 	// access modifiers
 	nal_public
 	// module stuff
 	nal_use
-	nal_define
+	nal_def
 	// (con|de)struction stuff
 	// nal_new
 	// nal_destroy
@@ -43,18 +41,18 @@ pub enum TokenType {
 	nal_colon
 	whitespace
 	comment // starts with @, skips the entire line
-
 	nal_equals // =
+	nal_assign // :=
 	// TODO BINARY OPS
 	// MATH OPS
 	nal_plus // +
-	nal_minus// -
+	nal_minus // -
 	nal_mult // *
-	nal_div  // /
-	nal_mod  // %
+	nal_div // /
+	nal_mod // %
 	// BOOLEAN OPS
 	nal_bool_and // &&
-	nal_bool_or  // ||
+	nal_bool_or // ||
 	nal_bool_not // !
 	nal_cmpeq // ==
 	nal_gt // >
@@ -65,10 +63,20 @@ pub enum TokenType {
 
 pub const (
 	operators = [
-	.nal_plus, .nal_minus, .nal_mult, .nal_div, .nal_mod,
-	.nal_bool_and, .nal_bool_not, .nal_bool_or, .nal_cmpeq,
-	.nal_gt, .nal_gteq, .nal_lt, .nal_lteq
+		.nal_plus,
+		.nal_minus,
+		.nal_mult,
+		.nal_div,
+		.nal_mod,
+		.nal_bool_and,
+		.nal_bool_not,
+		.nal_bool_or,
+		.nal_cmpeq,
+		.nal_gt,
+		.nal_gteq,
+		.nal_lt,
+		.nal_lteq,
 	]
 	// slight bug
-	literals = [TokenType.identifier, .nal_string_lit, .nal_int_lit, .nal_float_lit]
+	literals  = [TokenType.identifier, .nal_string_lit, .nal_int_lit, .nal_float_lit]
 )

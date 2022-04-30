@@ -1,41 +1,42 @@
 module compiler
 
 import regex
-
 import error
 
 fn match_token(file string, path string, line int, col int, current string) ?Token {
-
 	match true {
-		current.starts_with(" ") {
-			return Token{" ", line, col, .whitespace}
+		current.starts_with(' ') {
+			return Token{' ', line, col, .whitespace}
 		}
-		current.starts_with("\t") {
-			return Token{" ", line, col, .whitespace}
+		current.starts_with('\t') {
+			return Token{' ', line, col, .whitespace}
 		}
-		current.starts_with("\v") {
-			return Token{" ", line, col, .whitespace}
+		current.starts_with('\v') {
+			return Token{' ', line, col, .whitespace}
 		}
-		current.starts_with("\f") {
-			return Token{" ", line, col, .whitespace}
+		current.starts_with('\f') {
+			return Token{' ', line, col, .whitespace}
 		}
-		current.starts_with("@") {
-			return Token{'@'+current.find_between("@", "\n"), line, col, .comment}
+		current.starts_with(';') {
+			return Token{';' + current.find_between(';', '\n'), line, col, .comment}
 		}
-		current.starts_with(".") {
-			return Token{".", line, col, .nal_dot}
+		current.starts_with('.') {
+			return Token{'.', line, col, .nal_dot}
 		}
-		current.starts_with(",") {
-			return Token{",", line, col, .nal_comma}
+		current.starts_with(',') {
+			return Token{',', line, col, .nal_comma}
 		}
-		current.starts_with("{") {
-			return Token{"{", line, col, .nal_open_curly}
+		current.starts_with('{') {
+			return Token{'{', line, col, .nal_open_curly}
 		}
-		current.starts_with("}") {
-			return Token{"}", line, col, .nal_close_curly}
+		current.starts_with('}') {
+			return Token{'}', line, col, .nal_close_curly}
 		}
-		current.starts_with("=") {
-			return Token{"=", line, col, .nal_equals}
+		current.starts_with(':=') {
+			return Token{':=', line, col, .nal_assign}
+		}
+		current.starts_with('=') {
+			return Token{'=', line, col, .nal_equals}
 		}
 		current.starts_with('+') {
 			return Token{'+', line, col, .nal_plus}
@@ -52,53 +53,55 @@ fn match_token(file string, path string, line int, col int, current string) ?Tok
 		current.starts_with('%') {
 			return Token{'%', line, col, .nal_mod}
 		}
-		current.starts_with("(") {
-			return Token{"(", line, col, .nal_open_paren}
+		current.starts_with('(') {
+			return Token{'(', line, col, .nal_open_paren}
 		}
-		current.starts_with(")") {
-			return Token{")", line, col, .nal_close_paren}
+		current.starts_with(')') {
+			return Token{')', line, col, .nal_close_paren}
 		}
-		current.starts_with(">") {
-			return Token{">", line, col, .nal_gt}
+		current.starts_with('>') {
+			return Token{'>', line, col, .nal_gt}
 		}
-		current.starts_with(">=") {
-			return Token{">=", line, col, .nal_gteq}
+		current.starts_with('>=') {
+			return Token{'>=', line, col, .nal_gteq}
 		}
-		current.starts_with("<") {
-			return Token{"<", line, col, .nal_lt}
+		current.starts_with('<') {
+			return Token{'<', line, col, .nal_lt}
 		}
-		current.starts_with("<=") {
-			return Token{"<=", line, col, .nal_lteq}
+		current.starts_with('<=') {
+			return Token{'<=', line, col, .nal_lteq}
 		}
-		current.starts_with("fun") {
-			return Token{"fun", line, col, .nal_function}
+		current.starts_with('nal') {
+			return Token{'nal', line, col, .nal_nal}
 		}
-		current.starts_with("define") {
-			return Token{"define", line, col, .nal_define}
+		current.starts_with('fun') {
+			return Token{'fun', line, col, .nal_fun}
 		}
-		current.starts_with("use") {
-			return Token{"use", line, col, .nal_use}
+		current.starts_with('var') {
+			return Token{'var', line, col, .nal_var}
 		}
-		current.starts_with("pub") {
-			return Token{"pub", line, col, .nal_public}
+		current.starts_with('def') {
+			return Token{'def', line, col, .nal_def}
 		}
-		current.starts_with("struct") {
-			return Token{"struct", line, col, .nal_struct}
+		current.starts_with('use') {
+			return Token{'use', line, col, .nal_use}
 		}
-		current.starts_with("interface") {
-			return Token{"interface", line, col, .nal_interface}
+		current.starts_with('pub') {
+			return Token{'pub', line, col, .nal_public}
 		}
-		current.starts_with("enum") {
-			return Token{"enum", line, col, .nal_enum}
+		current.starts_with('type') {
+			return Token{'type', line, col, .nal_type}
 		}
-		current.starts_with("true") {
-			return Token{"true", line, col, .nal_true}
+		current.starts_with('true') {
+			return Token{'true', line, col, .nal_true}
 		}
-		current.starts_with("false") {
-			return Token{"false", line, col, .nal_false}
+		current.starts_with('false') {
+			return Token{'false', line, col, .nal_false}
 		}
 		else {
-			token := regex_token(file, path, line, col, current) or { return Token{current, line, col, .nal_eof} }
+			token := regex_token(file, path, line, col, current) or {
+				return Token{current, line, col, .nal_eof}
+			}
 			return token
 		}
 	}
@@ -116,8 +119,8 @@ fn regex_token(file string, path string, line int, col int, current string) ?Tok
 		}
 		return Token{matches[0], line, col, .nal_string_lit}
 	}
-	
-	if current[0] in [byte(`0`), `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`] {
+
+	if current[0].is_digit() {
 		// parse int
 		re.compile_opt('^[0-9]+([.]{0})') or { panic('bad regex in int parsing') }
 		matches := re.find_all_str(current)
@@ -136,7 +139,7 @@ fn regex_token(file string, path string, line int, col int, current string) ?Tok
 		}
 		return Token{matches[0], line, col, .nal_int_lit}
 	}
-	
+
 	// allowed naming includes snake_case, PascalCase, camelCase and kebab-case
 	re.compile_opt('^[a-zA-Z_][\-a-zA-Z_0-9]+$') or { panic('bad regex in ident parsing') }
 	matched := re.find_all_str(current)

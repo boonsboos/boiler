@@ -1,6 +1,6 @@
-define main
+def main
 
 fun main() void {
-	int ident = 2 + 2
-	bool iden = 2 > 2
+	ident := 2 + 2
+	iden := 2 > 2
 }

@@ -2,14 +2,13 @@ module compiler
 
 pub struct Token {
 pub:
-	text	   string
-	line	   int
-	col 	   int
-	typ TokenType
+	text string
+	line int
+	col  int
+	typ  TokenType
 }
 
 fn tokenize(file string, path string) []Token {
-
 	mut tokens := []Token{}
 
 	len := file.len
@@ -19,10 +18,9 @@ fn tokenize(file string, path string) []Token {
 	// reason for that is vs code
 
 	for idx < len {
-
 		current := file.substr(idx, file.len)
 
-		if current.starts_with("\n") {
+		if current.starts_with('\n') {
 			col = 1
 			line++
 			idx++
@@ -46,10 +44,8 @@ fn tokenize(file string, path string) []Token {
 		idx += token.text.len
 
 		tokens << token
-		
 	}
 
 	tokens << Token{'', 0, 0, .nal_eof}
 	return tokens
-
 }

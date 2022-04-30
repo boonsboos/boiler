@@ -1,8 +1,8 @@
-define main
+def main
 
 use IO.print
 
 fun main() void {
-    @ a cool comment here
-    print("hello world\n") @ very cool comment here
+    ; a cool comment here
+    print("hello world\n") ; very cool comment here
 }

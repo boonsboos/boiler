@@ -1,8 +1,8 @@
-define main
+def main
 
 use IO.print
 
-struct StructName {
+type StructName = {
 	string typ
 }
 
