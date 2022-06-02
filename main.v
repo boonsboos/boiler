@@ -6,14 +6,7 @@ import compiler
 
 fn main() {
 	if os.args.len > 1 {
-		match os.args[1] {
-			'com' {
-				util.compile_parse_flags(os.args[2..os.args.len])
-			}
-			else {
-				util.print_usage()
-			}
-		}
+		compiler.start_compile(os.args[1])
 	} else {
 		util.print_usage()
 	}

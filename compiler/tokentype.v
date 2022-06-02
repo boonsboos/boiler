@@ -2,81 +2,73 @@ module compiler
 
 pub enum TokenType {
 	// numbers
-	nal_int_lit
-	nal_float_lit
-	nal_string_lit
-	nal_nal // null
+	literal
+	str_literal
 	// boolean values
-	nal_true
-	nal_false
-	nal_var // for module or global constants (can be mut)
+	var // for module or global constants (can be mut)
 	// logic
-	nal_if
-	nal_else
+	bif
+	belse
 	// loops
-	nal_for
-	nal_while
+	loop
 	// data structures
-	nal_fun
-	nal_type
-	// access modifiers
-	nal_public
+	bfn
+	btype
 	// module stuff
-	nal_use
-	nal_def
-	// (con|de)struction stuff
-	// nal_new
-	// nal_destroy
-	// anything that's a type, module function or variable name
+	use
+	pack
+
 	identifier
 	// eof
-	nal_eof
+	eof
 	// characters important for blocks
-	nal_open_paren
-	nal_close_paren
-	nal_open_curly
-	nal_close_curly
-	nal_dot
-	nal_comma
-	nal_colon
+	pipe
+	dollar
+	open_paren
+	close_paren
+	open_curly
+	close_curly
+	dot
+	comma
+	colon
 	whitespace
 	comment // starts with @, skips the entire line
-	nal_equals // =
-	nal_assign // :=
+	equals // =
+	assign // :=
 	// TODO BINARY OPS
 	// MATH OPS
-	nal_plus // +
-	nal_minus // -
-	nal_mult // *
-	nal_div // /
-	nal_mod // %
+	plus // +
+	minus // -
+	mult // *
+	div // /
+	mod // %
 	// BOOLEAN OPS
-	nal_bool_and // &&
-	nal_bool_or // ||
-	nal_bool_not // !
-	nal_cmpeq // ==
-	nal_gt // >
-	nal_gteq // >=
-	nal_lt // <
-	nal_lteq // <=
+	bool_and // &&
+	bool_or // ||
+	bool_not // !
+	cmpeq // ==
+	gt // >
+	gteq // >=
+	lt // <
+	lteq // <=
 }
 
 pub const (
 	operators = [
-		.nal_plus,
-		.nal_minus,
-		.nal_mult,
-		.nal_div,
-		.nal_mod,
-		.nal_bool_and,
-		.nal_bool_not,
-		.nal_bool_or,
-		.nal_cmpeq,
-		.nal_gt,
-		.nal_gteq,
-		.nal_lt,
-		.nal_lteq,
+		TokenType.plus,
+		.minus,
+		.mult,
+		.div,
+		.mod,
+		.bool_and,
+		.bool_not,
+		.bool_or,
+		.cmpeq,
+		.gt,
+		.gteq,
+		.lt,
+		.lteq,
 	]
 	// slight bug
-	literals  = [TokenType.identifier, .nal_string_lit, .nal_int_lit, .nal_float_lit]
+	literals  = [TokenType.identifier, .str_literal, .literal]
 )

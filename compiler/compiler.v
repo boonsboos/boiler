@@ -7,7 +7,7 @@ pub fn start_compile(i string) {
 		eprintln('failed to find file')
 		exit(1)
 	}
-	file = file.replace('\r\n', '\n') // replace windows linefeeds
+	file = file.replace('\r', '') // replace windows linefeeds
 
 	mut tokens := tokenize(file, i)
 	if token_error > 0 {

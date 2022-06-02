@@ -1,6 +1,0 @@
-def main
-
-fun main() void {
-	ident := 2 + 2
-	iden := 2 > 2
-}

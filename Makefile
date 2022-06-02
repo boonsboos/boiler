@@ -1,9 +1,9 @@
 FLAGS := -skip-unused -enable-globals
-OUTPUT := nalc
+OUTPUT := boiler
 
 test-win:
 	v $(FLAGS) -o $(OUTPUT).exe .
-	./$(OUTPUT).exe com ./examples/test.nal
+	./$(OUTPUT).exe ./examples/test.bo
 
 # we use msvc on windows
 build-win:
@@ -11,7 +11,7 @@ build-win:
 
 test-nix:
 	v $(FLAGS) -o $(OUTPUT) .
-	./$(OUTPUT) com ./examples/test.nal
+	./$(OUTPUT) ./examples/test.bo
 
 # we use gcc on *nix
 build-nix:

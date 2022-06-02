@@ -1,0 +1,4 @@
+immu := 0
+mu = "thing"
+
+type wow = $false | $true

@@ -1,4 +1,0 @@
-one := 1
-string thing := "thing"
-int easy := 2 + 2
-; int hard = ( 2 + 2 )
